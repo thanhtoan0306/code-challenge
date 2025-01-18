@@ -16,12 +16,12 @@ const App: React.FC = () => {
   const [tokenPrices, setTokenPrices] = useState<TokenPrice[]>([]);
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [result, setResult] = useState<string>("");
 
   const {
     register,
     handleSubmit,
     watch,
-    setValue,
     formState: { errors },
   } = useForm<FormData>();
 
@@ -56,13 +56,10 @@ const App: React.FC = () => {
 
   // Form submission handler
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      alert(
-        `Converted ${data.amount} ${data.fromCurrency} to ${data.toCurrency}`
-      );
-    }, 2000);
+    if (exchangeRate !== null) {
+      const convertedAmount = data.amount * exchangeRate;
+      setResult(`${convertedAmount.toFixed(2)} ${data.toCurrency}`);
+    }
   };
 
   return (
@@ -127,6 +124,9 @@ const App: React.FC = () => {
             ? `Exchange Rate: ${exchangeRate.toFixed(4)}`
             : "Select currencies to view exchange rate"}
         </Typography>
+
+        {/* Result Field */}
+        <TextField label="Converted Amount" value={result} fullWidth disabled />
 
         {/* Submit Button */}
         <Button
