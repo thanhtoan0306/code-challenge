@@ -60,6 +60,7 @@ const App: React.FC = () => {
       const convertedAmount = data.amount * exchangeRate;
       setResult(`${convertedAmount.toFixed(2)} ${data.toCurrency}`);
     }
+    setLoading(false);
   };
 
   return (
