@@ -3,6 +3,14 @@ import React, { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { fetchTokenPrices } from "./api";
 import { TokenPrice, FormData } from "./types";
+import {
+  Box,
+  Typography,
+  TextField,
+  MenuItem,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 
 const App: React.FC = () => {
   const [tokenPrices, setTokenPrices] = useState<TokenPrice[]>([]);
@@ -58,86 +66,81 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h1 className="text-xl font-bold mb-4">Currency Swap</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <Box sx={{ maxWidth: 400, margin: "0 auto", padding: 2 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Currency Swap
+      </Typography>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{ display: "flex", flexDirection: "column", gap: 16 }}
+      >
         {/* From Currency */}
-        <div>
-          <label className="block mb-1">From Currency</label>
-          <select
-            {...register("fromCurrency", {
-              required: "From currency is required",
-            })}
-            className="p-2 border rounded w-full"
-          >
-            <option value="">Select Currency</option>
-            {tokenPrices.map((token) => (
-              <option key={token.currency} value={token.currency}>
-                {token.currency}
-              </option>
-            ))}
-          </select>
-          {errors.fromCurrency && (
-            <p className="text-red-500 text-sm">
-              {errors.fromCurrency.message}
-            </p>
-          )}
-        </div>
+        <TextField
+          select
+          label="From Currency"
+          fullWidth
+          error={!!errors.fromCurrency}
+          helperText={errors.fromCurrency?.message}
+          {...register("fromCurrency", {
+            required: "From currency is required",
+          })}
+        >
+          {tokenPrices.map((token) => (
+            <MenuItem key={token.currency} value={token.currency}>
+              {token.currency}
+            </MenuItem>
+          ))}
+        </TextField>
 
         {/* To Currency */}
-        <div>
-          <label className="block mb-1">To Currency</label>
-          <select
-            {...register("toCurrency", { required: "To currency is required" })}
-            className="p-2 border rounded w-full"
-          >
-            <option value="">Select Currency</option>
-            {tokenPrices.map((token) => (
-              <option key={token.currency} value={token.currency}>
-                {token.currency}
-              </option>
-            ))}
-          </select>
-          {errors.toCurrency && (
-            <p className="text-red-500 text-sm">{errors.toCurrency.message}</p>
-          )}
-        </div>
+        <TextField
+          select
+          label="To Currency"
+          fullWidth
+          error={!!errors.toCurrency}
+          helperText={errors.toCurrency?.message}
+          {...register("toCurrency", { required: "To currency is required" })}
+        >
+          {tokenPrices.map((token) => (
+            <MenuItem key={token.currency} value={token.currency}>
+              {token.currency}
+            </MenuItem>
+          ))}
+        </TextField>
 
         {/* Amount */}
-        <div>
-          <label className="block mb-1">Amount</label>
-          <input
-            type="number"
-            {...register("amount", {
-              required: "Amount is required",
-              min: { value: 0.01, message: "Amount must be greater than 0" },
-            })}
-            className="p-2 border rounded w-full"
-          />
-          {errors.amount && (
-            <p className="text-red-500 text-sm">{errors.amount.message}</p>
-          )}
-        </div>
+        <TextField
+          label="Amount"
+          type="number"
+          fullWidth
+          error={!!errors.amount}
+          helperText={errors.amount?.message}
+          {...register("amount", {
+            required: "Amount is required",
+            min: { value: 0.01, message: "Amount must be greater than 0" },
+          })}
+        />
 
         {/* Exchange Rate */}
-        <div className="text-gray-500">
+        <Typography variant="body2" color="textSecondary">
           {exchangeRate !== null
             ? `Exchange Rate: ${exchangeRate.toFixed(4)}`
             : "Select currencies to view exchange rate"}
-        </div>
+        </Typography>
 
         {/* Submit Button */}
-        <button
+        <Button
           type="submit"
-          className={`w-full p-2 rounded text-white ${
-            loading ? "bg-gray-400" : "bg-green-500"
-          }`}
+          variant="contained"
+          color="primary"
+          fullWidth
           disabled={loading}
+          startIcon={loading && <CircularProgress size={20} />}
         >
           {loading ? "Converting..." : "Convert"}
-        </button>
+        </Button>
       </form>
-    </div>
+    </Box>
   );
 };
 
